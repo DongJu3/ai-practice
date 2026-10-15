@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보처리기사 필기 퀴즈</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- 메인 화면 -->
+        <div id="mainScreen" class="screen active">
+            <div class="screen-content">
+                <div class="header">
+                    <h1>📚 정보처리기사 필기</h1>
+                    <p>기출 문제로 합격을 준비하세요</p>
+                </div>
+
+                <div class="menu-grid">
+                    <button class="menu-btn" onclick="app.goToQuiz()">
+                        <div class="menu-icon">🎯</div>
+                        <div class="menu-title">퀴즈 시작</div>
+                        <div class="menu-desc">20문제 풀기</div>
+                    </button>
+
+                    <button class="menu-btn" onclick="app.goToSubjectQuiz()">
+                        <div class="menu-icon">📖</div>
+                        <div class="menu-title">과목별 퀴즈</div>
+                        <div class="menu-desc">선택해서 풀기</div>
+                    </button>
+
+                    <button class="menu-btn" onclick="app.goToWrongNotes()">
+                        <div class="menu-icon">📝</div>
+                        <div class="menu-title">오답노트</div>
+                        <div class="menu-desc">틀린 문제 복습</div>
+                    </button>
+
+                    <button class="menu-btn" onclick="app.goToStudyRecord()">
+                        <div class="menu-icon">📊</div>
+                        <div class="menu-title">학습 기록</div>
+                        <div class="menu-desc">성과 확인</div>
+                    </button>
+
+                    <button class="menu-btn" onclick="app.goToQuestionManager()">
+                        <div class="menu-icon">⚙️</div>
+                        <div class="menu-title">문제 관리</div>
+                        <div class="menu-desc">문제 추가/확인</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+        <div id="quizScreen" class="screen">
+            <div class="screen-content quiz-content">
+                <div class="quiz-header">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <div class="quiz-info">
+                        <span id="questionNumber" class="question-number">1 / 20</span>
+                        <span id="currentScore" class="current-score">0점</span>
+                    </div>
+                </div>
+
+                <div class="quiz-body">
+                    <div class="subject-badge" id="subjectBadge">과목</div>
+                    <div class="question-text" id="questionText">문제가 로딩 중입니다...</div>
+
+                    <div class="choices-container" id="choicesContainer">
+                        <!-- 선택지가 동적으로 생성됨 -->
+                    </div>
+                </div>
+
+                <div class="quiz-footer">
+                    <div class="answer-feedback" id="answerFeedback" style="display: none;">
+                        <div id="feedbackMessage" class="feedback-message"></div>
+                        <div id="feedbackDetails" class="feedback-details"></div>
+                    </div>
+
+                    <div class="quiz-buttons">
+                        <button id="confirmBtn" class="btn btn-primary" onclick="quiz.checkAnswer()" disabled>정답 확인</button>
+                        <button id="nextBtn" class="btn btn-secondary" onclick="quiz.nextQuestion()" style="display: none;">다음 문제</button>
+                    </div>
+                </div>
+
+                <div class="quiz-sidebar">
+                    <div class="sidebar-title">문제 네비게이션</div>
+                    <div id="questionNav" class="question-nav">
+                        <!-- 문제 번호 네비게이션이 동적으로 생성됨 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="resultScreen" class="screen">
+            <div class="screen-content">
+                <div class="result-header">
+                    <h2>퀴즈 완료!</h2>
+                </div>
+
+                <div class="result-main">
+                    <div class="result-summary">
+                        <div class="result-item">
+                            <span class="result-label">총 문제</span>
+                            <span id="totalQuestions" class="result-value">20</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">정답</span>
+                            <span id="correctAnswers" class="result-value correct">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">오답</span>
+                            <span id="wrongAnswers" class="result-value wrong">0</span>
+                        </div>
+                        <div class="result-item big">
+                            <span class="result-label">최종 점수</span>
+                            <span id="finalScore" class="result-value score">0</span>
+                        </div>
+                    </div>
+
+                    <div class="result-by-subject">
+                        <h3>과목별 성적</h3>
+                        <div id="subjectResults" class="subject-results">
+                            <!-- 과목별 결과가 동적으로 생성됨 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-buttons">
+                    <button class="btn btn-secondary" onclick="app.goToWrongNotes()">오답 확인</button>
+                    <button class="btn btn-primary" onclick="quiz.retakeQuiz()">다시 풀기</button>
+                    <button class="btn btn-outline" onclick="app.goToMain()">메인 화면</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 과목별 퀴즈 설정 화면 -->
+        <div id="subjectQuizScreen" class="screen">
+            <div class="screen-content">
+                <div class="header">
+                    <h2>과목별 퀴즈</h2>
+                    <p>풀고 싶은 과목과 문제 개수를 선택하세요</p>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3>과목 선택</h3>
+                        <div class="subject-checkboxes">
+                            <label><input type="checkbox" value="소프트웨어 설계" class="subject-checkbox" checked> 소프트웨어 설계</label>
+                            <label><input type="checkbox" value="소프트웨어 개발" class="subject-checkbox" checked> 소프트웨어 개발</label>
+                            <label><input type="checkbox" value="데이터베이스 구축" class="subject-checkbox" checked> 데이터베이스 구축</label>
+                            <label><input type="checkbox" value="프로그래밍 언어 활용" class="subject-checkbox" checked> 프로그래밍 언어 활용</label>
+                            <label><input type="checkbox" value="정보시스템 구축관리" class="subject-checkbox" checked> 정보시스템 구축관리</label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>문제 개수</h3>
+                        <div class="question-count">
+                            <label><input type="radio" name="questionCount" value="10"> 10문제</label>
+                            <label><input type="radio" name="questionCount" value="20" checked> 20문제</label>
+                            <label><input type="radio" name="questionCount" value="40"> 40문제</label>
+                            <label><input type="radio" name="questionCount" value="all"> 전체 문제</label>
+                        </div>
+                    </div>
+
+                    <div class="settings-info" id="questionCountInfo">
+                        선택된 조건의 문제: 20개
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="quiz.startSubjectQuiz()">퀴즈 시작</button>
+                    <button class="btn btn-outline" onclick="app.goToMain()">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 오답노트 화면 -->
+        <div id="wrongNotesScreen" class="screen">
+            <div class="screen-content">
+                <div class="header">
+                    <h2>오답노트</h2>
+                    <p id="wrongNotesCount">틀린 문제: 0개</p>
+                </div>
+
+                <div class="wrong-notes-container">
+                    <div id="wrongNotesList" class="wrong-notes-list">
+                        <!-- 오답 문제가 동적으로 생성됨 -->
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="retakeWrongBtn" class="btn btn-primary" onclick="quiz.retakeWrongQuestions()" disabled>오답 문제 다시 풀기</button>
+                    <button class="btn btn-outline" onclick="app.goToMain()">메인 화면</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 학습 기록 화면 -->
+        <div id="studyRecordScreen" class="screen">
+            <div class="screen-content">
+                <div class="header">
+                    <h2>학습 기록</h2>
+                    <p>정보처리기사 학습 현황</p>
+                </div>
+
+                <div class="study-record-container">
+                    <table class="study-record-table">
+                        <thead>
+                            <tr>
+                                <th>날짜</th>
+                                <th>문제 수</th>
+                                <th>정답</th>
+                                <th>오답</th>
+                                <th>점수</th>
+                                <th>정답률</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordTableBody">
+                            <!-- 학습 기록이 동적으로 생성됨 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-outline" onclick="app.goToMain()">메인 화면</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 문제 관리 화면 -->
+        <div id="questionManagerScreen" class="screen">
+            <div class="screen-content">
+                <div class="header">
+                    <h2>문제 관리</h2>
+                    <p>등록된 기출 문제 현황</p>
+                </div>
+
+                <div class="question-stats">
+                    <div class="stat-box">
+                        <div class="stat-label">전체 문제</div>
+                        <div class="stat-value" id="totalQuestionCount">0</div>
+                    </div>
+                </div>
+
+                <div class="subject-stats">
+                    <h3>과목별 문제 수</h3>
+                    <div id="subjectStatsList" class="subject-stats-list">
+                        <!-- 과목별 통계가 동적으로 생성됨 -->
+                    </div>
+                </div>
+
+                <div class="year-stats">
+                    <h3>연도별 문제 수</h3>
+                    <div id="yearStatsList" class="year-stats-list">
+                        <!-- 연도별 통계가 동적으로 생성됨 -->
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-outline" onclick="app.goToMain()">메인 화면</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 자바스크립트 파일들 -->
+    <script src="js/storage.js"></script>
+    <script src="js/questionManager.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
